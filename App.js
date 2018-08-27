@@ -26,49 +26,55 @@ export default class App extends React.Component {
 
     this.scrollOffset = 0;
 
-    this.animation = new Animated.ValueXY({ x: 0, y: 0 });
+    this.animation = new Animated.ValueXY({ x: 0, y: SCREEN_HEIGHT - 90 })
 
     this.panResponder = PanResponder.create({
 
       onMoveShouldSetPanResponder: (evt, gestureState) => {
-        if ((this.state.isScrollEnabled && this.scrollOffset <= 0 && gestureState.dy > 0 )|| !this.state.isScrollEnabled && gestureState.dy < 0) {
-          return true;
+
+        if ((this.state.isScrollEnabled && this.scrollOffset <= 0 && gestureState.dy > 0) || !this.state.isScrollEnabled && gestureState.dy < 0) {
+          return true
         } else {
-          return false;
+          return false
         }
       },
       onPanResponderGrant: (evt, gestureState) => {
-        this.animation.extractOffset();
+        this.animation.extractOffset()
       },
       onPanResponderMove: (evt, gestureState) => {
-        this.animation.setValue({ x: 0, y: gestureState.dy });
+
+        this.animation.setValue({ x: 0, y: gestureState.dy })
       },
       onPanResponderRelease: (evt, gestureState) => {
 
-        if (gestureState.moveY > SCREEN_HEIGHT -120) {
+        if (gestureState.moveY > SCREEN_HEIGHT - 120) {
           Animated.spring(this.animation.y, {
             toValue: 0,
             tension: 1
-          }).start();
-        } else if (gestureState.dy < 0) {
-          this.setState({ isScrollEnabled: true });
+          }).start()
         }
+        else if (gestureState.moveY < 120) {
+          Animated.spring(this.animation.y, {
+            toValue: 0,
+            tension: 1
+          }).start()
+        }
+        else if (gestureState.dy < 0) {
+          this.setState({ isScrollEnabled: true })
 
-        if (gestureState.dy < 0) {
-          this.setState({isScrollEnabled: true})
           Animated.spring(this.animation.y, {
             toValue: -SCREEN_HEIGHT + 120,
             tension: 1
-          }).start();
-        }else if (gestureState.dy > 0) {
+          }).start()
+        }
+        else if (gestureState.dy > 0) {
           this.setState({ isScrollEnabled: false })
           Animated.spring(this.animation.y, {
             toValue: SCREEN_HEIGHT - 120,
             tension: 1
-          }).start();
+          }).start()
         }
       }
-
     });
   }
 
